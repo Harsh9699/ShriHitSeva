@@ -21,13 +21,13 @@ CRITICAL INSTRUCTIONS:
    - If the app language is Hindi (where appLanguage === 'hi') OR the user writes in Pure Hindi, you MUST reply entirely in beautiful, pure Hindi (Devanagari script).
    - If the user writes in Hinglish and the app language is English, reply in Hinglish.
    - If the user writes in English, reply in English.
-3. Research: Use your provided tools (like Google Search) to perform thorough research on "Shri Sevak Vaani written by Shri Sevak ji Maharaj", as well as the spiritual discourses from the "Bhajan Marg" (Shri Hit Premanand ji Maharaj) and "Hita Ambrish" YouTube channels. Incorporate wisdom from these sources alongside scriptures like the Shrimad Bhagwad Geeta and Shrimad Bhagavad Mahapuran.
-4. START IMMEDIATELY: The generated text MUST start immediately with the spiritual passage or teaching. DO NOT include any introductory remarks, greetings (e.g., "Radhe Radhe", "Jai Shri Krishna"), meta-talk, or rubbish lines at the beginning.
-5. Basis of Response: Always reply based on the philosophical alignment and traditional values found in these specific YouTube discourses and Vaanis. Your answers should reflect the deep devotion and subtle nuances taught by these saints.
-6. Structure: Output the discourse as a list of distinct, well-structured paragraphs totaling approximately 300 words. This ensures readability and high-quality audio for Text-to-Speech.
-7. Tone: Maintain a distinctly Indian, respectful, authoritative, and devotional tone. Sound like a wise, humble Rasik master.
-8. Formatting: Do not use markdown bolding (double asterisks). Use plain text or simple capitalization for emphasis.
-9. DO NOT explicitly name-drop or repeatedly state that you are basing your answer on "Shri Hit Premanand Ji Maharaj" or "Shri Hita Ambrish Ji" unless the user explicitly asks about them. Simply absorb their teachings and speak naturally as a guru.
+3. Research & Tools: You have a tool to search the scriptures. If a user asks for a specific verse, Shlok, or concept, you MUST use the search tool first. 
+4. No Hallucination: If you search for a verse and the tool returns no result, DO NOT hallucinate or guess the text. Honestly tell the user that you don't have that specific verse memorized, and offer general spiritual guidance instead.
+5. START IMMEDIATELY: The generated text MUST start immediately with the spiritual passage or teaching. DO NOT include any introductory remarks, greetings (e.g., "Radhe Radhe", "Jai Shri Krishna"), meta-talk, or rubbish lines at the beginning.
+6. Basis of Response: Always reply based on the philosophical alignment and traditional values found in these specific YouTube discourses and Vaanis. Your answers should reflect the deep devotion and subtle nuances taught by these saints.
+7. Structure: Output the discourse as a list of distinct, well-structured paragraphs totaling approximately 300 words. This ensures readability and high-quality audio for Text-to-Speech.
+8. Tone: Maintain a distinctly Indian, respectful, authoritative, and devotional tone. Sound like a wise, humble Rasik master.
+9. Formatting: Do not use markdown bolding (double asterisks). Use plain text or simple capitalization for emphasis.
 
 Core Philosophy:
 - Shri Radha is the Supreme (Radha-Pada-Padma-Pradhan).
@@ -347,7 +347,7 @@ export default function Chatbot({ isOpen, setIsOpen }: ChatbotProps) {
     setIsLoadingHarivanshi(true);
 
     try {
-      const chatHistory = messagesHarivanshi.map(msg => ({
+      const chatHistory: any[] = messagesHarivanshi.map(msg => ({
         role: msg.role === 'assistant' ? 'model' : 'user',
         parts: [{ text: msg.content }]
       }));
@@ -357,54 +357,65 @@ export default function Chatbot({ isOpen, setIsOpen }: ChatbotProps) {
         parts: [{ text: inputHarivanshi }]
       });
 
-      // Translate Hinglish to Devanagari keywords for better search
-      let searchKeywords = inputHarivanshi;
-      try {
-        const keywordResponse = await ai.models.generateContent({
-          model: "gemini-flash-latest",
-          contents: [{ role: 'user', parts: [{ text: `Extract 2 to 4 essential keywords from the following text and translate them into Devanagari (Hindi) script if they are in Hinglish. ONLY output the Devanagari words separated by spaces, nothing else. Text: "${inputHarivanshi}"` }] }]
-        });
-        if (keywordResponse.text) {
-          searchKeywords = searchKeywords + " " + keywordResponse.text;
-        }
-      } catch (e) {
-        console.error("Keyword translation failed", e);
-      }
+      const systemInstruction = getSystemInstruction(language);
 
-      // Find relevant Vaani guidance based on user's input + translated keywords
-      const vaaniMatch = findVaaniGuidance(searchKeywords);
-      let systemInstruction = getSystemInstruction(language);
-      
-      if (vaaniMatch) {
-        systemInstruction += `
-        
-CRITICAL: SCRIPTURE RAG TRAINING ENGAGED FOR DEVOTEE'S QUERY:
-The devotee's query touches upon themes found in the sacred Vaanis. You MUST weave the following scripture directly into your discourse naturally:
-
-Source Section: ${vaaniMatch.sectionTitle}
-Title: ${vaaniMatch.vaani.title}
-Verse:
-${vaaniMatch.vaani.text}
-
-Meaning:
-${vaaniMatch.vaani.meaning || 'Provide a beautiful, devotional explanation for this verse based on Rasik philosophy.'}
-
-REQUIRED FORMAT & TONE:
-- Do NOT use double asterisks (**) for bolding. Use plain text or CAPITAL LETTERS.
-- Start directly with the teaching.
-- Quote the Verse.
-- Weave the translation and explanation naturally in your Hinglish spiritual guru voice.
-- Base your advice entirely on this specific verse and Hitopasana.
-`;
-      }
-
-      const response = await ai.models.generateContent({
+      let response = await ai.models.generateContent({
         model: "gemini-flash-latest",
-        contents: chatHistory as any,
+        contents: chatHistory,
         config: {
-          systemInstruction: systemInstruction
+          systemInstruction: systemInstruction,
+          tools: [{
+            functionDeclarations: [{
+              name: "search_scriptures",
+              description: "Search the sacred Vaanis (like Hit Chaurasi, Radha Sudha Nidhi, etc.) for a specific verse. Call this tool immediately if the user asks for a specific Shlok or teaching.",
+              parameters: {
+                type: "OBJECT",
+                properties: {
+                  search_query: {
+                    type: "STRING",
+                    description: "The keywords to search for. Translate Hinglish to pure English or Devanagari if needed. (e.g., '1st shlok of Radha Sudha Nidhi')"
+                  }
+                },
+                required: ["search_query"]
+              }
+            }]
+          }]
         }
       });
+
+      // Handle function call if the AI decides to search
+      if (response.functionCalls && response.functionCalls.length > 0) {
+        const call = response.functionCalls[0];
+        if (call.name === 'search_scriptures') {
+          const args = call.args as any;
+          const searchQuery = args.search_query;
+          
+          const vaaniMatch = findVaaniGuidance(searchQuery);
+          
+          let functionResponseText = '';
+          if (vaaniMatch) {
+            functionResponseText = `SUCCESS! Found Verse in ${vaaniMatch.sectionTitle}:\nTitle: ${vaaniMatch.vaani.title}\nText: ${vaaniMatch.vaani.text}\nMeaning: ${vaaniMatch.vaani.meaning || 'No exact meaning provided, please translate it.'}\n\nCRITICAL INSTRUCTION: You must quote this exact verse and meaning to the user in your response.`;
+          } else {
+            functionResponseText = "FAILURE: No specific verse found matching the query. You MUST honestly tell the user that you couldn't find the exact verse they asked for, and then provide a general spiritual guidance instead. DO NOT hallucinate a fake verse.";
+          }
+
+          chatHistory.push({
+            role: 'model',
+            parts: [{ functionCall: call }]
+          });
+
+          chatHistory.push({
+            role: 'user', // In Gemini SDK, tool responses are often sent as role 'user' or 'tool'
+            parts: [{ functionResponse: { name: call.name, response: { result: functionResponseText } } }]
+          });
+
+          response = await ai.models.generateContent({
+            model: "gemini-flash-latest",
+            contents: chatHistory,
+            config: { systemInstruction: systemInstruction }
+          });
+        }
+      }
 
       const cleanedText = (response.text || "").replace(/\*\*/g, '');
 
@@ -438,7 +449,7 @@ REQUIRED FORMAT & TONE:
     setIsLoadingGita(true);
 
     try {
-      const chatHistory = messagesGita.map(msg => ({
+      const chatHistory: any[] = messagesGita.map(msg => ({
         role: msg.role === 'assistant' ? 'model' : 'user',
         parts: [{ text: msg.content }]
       }));
@@ -448,49 +459,65 @@ REQUIRED FORMAT & TONE:
         parts: [{ text: inputGita }]
       });
 
-      // Find relevant Bhagavad Gita guidance based on user's input
-      const gitaMatch = findGitaGuidance(inputGita);
       let systemInstruction = getGitaSystemInstruction(language);
       
-      if (gitaMatch) {
-        systemInstruction += `
-        
-CRITICAL: BHAGAVAD GITA TRAINING ENGAGED FOR DEVOTEE'S LIFE PROBLEM:
-The devotee is experiencing a life problem related to: "${gitaMatch.topic}".
-You MUST parse their problem and take the perfect reply from the sacred training file below:
-
-Sanskrit Shloka:
-${gitaMatch.shloka}
-
-Translation:
-${gitaMatch.translation}
-
-Guru Explanation in Hinglish:
-${gitaMatch.explanationHinglish}
-
-Guru Explanation in Hindi:
-${gitaMatch.explanationHindi}
-
-Direct Guidance:
-${gitaMatch.guidance}
-
-REQUIRED FORMAT & TONE:
-- Do NOT use double asterisks (**) for bolding. Use plain text or CAPITAL LETTERS.
-- Start directly with the teaching.
-- State the Sanskrit Shloka clearly.
-- Weave the translation and explanation naturally in your sweet Hinglish/Hindi spiritual guru voice.
-- Guide the devotee on how to apply this to their life problem.
-- End with a soothing and encouraging blessings of Lord Sri Krishna.
-`;
-      }
-
-      const response = await ai.models.generateContent({
+      let response = await ai.models.generateContent({
         model: "gemini-flash-latest",
-        contents: chatHistory as any,
+        contents: chatHistory,
         config: {
-          systemInstruction: systemInstruction
+          systemInstruction: systemInstruction,
+          tools: [{
+            functionDeclarations: [{
+              name: "search_gita",
+              description: "Search the Bhagavad Gita for guidance on a specific life problem or topic.",
+              parameters: {
+                type: "OBJECT",
+                properties: {
+                  search_query: {
+                    type: "STRING",
+                    description: "The life problem or topic to search for in the Gita (e.g. 'anxiety', 'loss', 'purpose')."
+                  }
+                },
+                required: ["search_query"]
+              }
+            }]
+          }]
         }
       });
+
+      // Handle function call if the AI decides to search
+      if (response.functionCalls && response.functionCalls.length > 0) {
+        const call = response.functionCalls[0];
+        if (call.name === 'search_gita') {
+          const args = call.args as any;
+          const searchQuery = args.search_query;
+          
+          const gitaMatch = findGitaGuidance(searchQuery);
+          
+          let functionResponseText = '';
+          if (gitaMatch) {
+            functionResponseText = `SUCCESS! Found relevant Gita guidance for "${gitaMatch.topic}":\nSanskrit Shloka: ${gitaMatch.shloka}\nTranslation: ${gitaMatch.translation}\nHinglish Explanation: ${gitaMatch.explanationHinglish}\nHindi Explanation: ${gitaMatch.explanationHindi}\nGuidance: ${gitaMatch.guidance}\n\nCRITICAL INSTRUCTION: You must base your answer heavily on this Shloka and provide the comfort and explanation given here.`;
+          } else {
+            functionResponseText = "FAILURE: No specific Gita verse found for that exact problem. Provide general comforting guidance based on Krishna's teachings on duty and surrender, and politely mention you don't have a specific shloka for that niche exact word.";
+          }
+
+          chatHistory.push({
+            role: 'model',
+            parts: [{ functionCall: call }]
+          });
+
+          chatHistory.push({
+            role: 'user',
+            parts: [{ functionResponse: { name: call.name, response: { result: functionResponseText } } }]
+          });
+
+          response = await ai.models.generateContent({
+            model: "gemini-flash-latest",
+            contents: chatHistory,
+            config: { systemInstruction: systemInstruction }
+          });
+        }
+      }
 
       const cleanedText = (response.text || "").replace(/\*\*/g, '');
 
