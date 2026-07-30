@@ -16,10 +16,20 @@ import Community from './components/Community';
 import Chatbot from './components/Chatbot';
 import Footer from './components/Footer';
 import AudioPlayer from './components/AudioPlayer';
+import Preloader from './components/Preloader';
 
 export default function App() {
   const [activePage, setActivePage] = useState('home');
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [showPreloader, setShowPreloader] = useState(true);
+
+  useEffect(() => {
+    // Hide preloader after 3.5 seconds
+    const timer = setTimeout(() => {
+      setShowPreloader(false);
+    }, 3500);
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -27,6 +37,10 @@ export default function App() {
 
   return (
     <div className="min-h-screen flex flex-col relative">
+      <AnimatePresence>
+        {showPreloader && <Preloader key="preloader" />}
+      </AnimatePresence>
+
       {/* Mystical Fireflies (Divine Sparks) */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
         {[...Array(25)].map((_, i) => (
