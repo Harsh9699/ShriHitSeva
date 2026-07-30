@@ -28,39 +28,41 @@ export default function Preloader() {
 
       {/* Main Spiritual Elements */}
       <div className="relative z-10 flex flex-col items-center px-4">
-        {/* Lotus Animation */}
+        {/* Logo Animation */}
         <motion.div
           initial={{ scale: 0.5, opacity: 0, y: 30 }}
           animate={{ scale: 1, opacity: 1, y: 0 }}
           transition={{ duration: 1.5, ease: 'easeOut' }}
-          className="mb-8"
+          className="mb-8 relative"
         >
-          <svg width="140" height="140" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-[var(--color-saffron)] drop-shadow-lg">
-            <motion.path
-              initial={{ pathLength: 0, fill: "transparent" }}
-              animate={{ pathLength: 1, fill: "currentColor" }}
-              transition={{ duration: 2, ease: "easeInOut" }}
-              d="M50 85C50 85 20 65 20 45C20 25 40 10 50 10C60 10 80 25 80 45C80 65 50 85 50 85Z"
-              stroke="currentColor"
-              strokeWidth="1.5"
-            />
-            <motion.path
-              initial={{ pathLength: 0, fill: "transparent" }}
-              animate={{ pathLength: 1, fill: "currentColor" }}
-              transition={{ duration: 2, delay: 0.4, ease: "easeInOut" }}
-              d="M50 85C50 85 5 70 5 45C5 20 30 15 50 35C70 15 95 20 95 45C95 70 50 85 50 85Z"
-              stroke="currentColor"
-              strokeWidth="1.5"
-            />
-            <motion.path
-              initial={{ pathLength: 0, fill: "transparent" }}
-              animate={{ pathLength: 1, fill: "currentColor" }}
-              transition={{ duration: 2, delay: 0.8, ease: "easeInOut" }}
-              d="M50 85C50 85 -5 60 5 35C15 10 40 20 50 50C60 20 85 10 95 35C105 60 50 85 50 85Z"
-              stroke="currentColor"
-              strokeWidth="1.5"
-            />
-          </svg>
+          {/* Glowing Aura Behind Logo */}
+          <motion.div 
+            className="absolute inset-0 rounded-full bg-[var(--color-saffron)] blur-[40px] opacity-20"
+            animate={{ 
+              scale: [1, 1.5, 1],
+              opacity: [0.2, 0.5, 0.2]
+            }}
+            transition={{
+              duration: 3,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          />
+          
+          <motion.img 
+            src="/logo-512x512.png" 
+            alt="Shri Hit Seva Logo"
+            className="w-32 h-32 md:w-40 md:h-40 rounded-full relative z-10 border-2 border-[var(--color-honey)] shadow-[0_0_30px_rgba(212,175,55,0.4)]"
+            animate={{ 
+              y: [0, -10, 0],
+              rotate: [0, 5, -5, 0]
+            }}
+            transition={{
+              duration: 4,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          />
         </motion.div>
 
         {/* Text Animation */}
