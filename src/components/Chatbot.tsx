@@ -9,7 +9,8 @@ import { findGitaGuidance } from '../constants/bhagavadGitaTeachings';
 import { findVaaniGuidance } from '../lib/vaaniSearch';
 import { useLanguage } from '../context/LanguageContext';
 
-const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY || '' });
+const apiKey = import.meta.env.VITE_GEMINI_API_KEY || (typeof process !== 'undefined' && process.env.GEMINI_API_KEY) || '';
+const ai = new GoogleGenAI({ apiKey });
 
 const getSystemInstruction = (appLanguage: string) => `
 You are an Indian male spiritual guru and a highly knowledgeable companion for the Radhavallabh Sampradaya.
