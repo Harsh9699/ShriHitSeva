@@ -16,19 +16,7 @@ export default function AudioPlayer() {
   // No YouTube blocking, no API restrictions.
   const KIRTAN_URL = '/kirtan.mp3';
 
-  // Sync state with native audio element
-  useEffect(() => {
-    if (audioRef.current) {
-      if (isPlaying) {
-        audioRef.current.play().catch(e => {
-          console.error("Audio play error:", e);
-          setIsPlaying(false);
-        });
-      } else {
-        audioRef.current.pause();
-      }
-    }
-  }, [isPlaying]);
+  // Sync state with native audio element (Removed useEffect to fix Android autoplay policy by handling it directly in click)
 
   useEffect(() => {
     if (audioRef.current) {
@@ -79,7 +67,26 @@ export default function AudioPlayer() {
           >
             {/* Play Button */}
             <button
-              onClick={() => setIsPlaying(!isPlaying)}
+              onClick={() => {
+                if (audioRef.current) {
+                  if (isPlaying) {
+                    audioRef.current.pause();
+                    setIsPlaying(false);
+                  } else {
+                    const playPromise = audioRef.current.play();
+                    if (playPromise !== undefined) {
+                      playPromise.then(() => {
+                        setIsPlaying(true);
+                      }).catch(error => {
+                        console.error("Audio play error:", error);
+                        setIsPlaying(false);
+                      });
+                    } else {
+                      setIsPlaying(true);
+                    }
+                  }
+                }
+              }}
               className={`w-14 h-14 rounded-full flex items-center justify-center transition-all cursor-pointer shadow-sm ml-0.5
                 ${isPlaying 
                   ? 'bg-linear-to-br from-[var(--color-honey)] to-[var(--color-gold)] text-white' 
