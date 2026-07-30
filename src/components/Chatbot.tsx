@@ -4,7 +4,7 @@ import {
   MessageCircle, Send, X, Sparkles, Volume2, VolumeX, Settings, RotateCcw, BookOpen, Compass, Mic
 } from 'lucide-react';
 import { ChatMessage } from '../types';
-import { GoogleGenAI, Modality } from "@google/genai";
+import { GoogleGenAI, Modality, Type } from "@google/genai";
 import { findGitaGuidance } from '../constants/bhagavadGitaTeachings';
 import { findVaaniGuidance } from '../lib/vaaniSearch';
 import { useLanguage } from '../context/LanguageContext';
@@ -370,10 +370,10 @@ export default function Chatbot({ isOpen, setIsOpen }: ChatbotProps) {
               name: "search_scriptures",
               description: "Search the sacred Vaanis (like Hit Chaurasi, Radha Sudha Nidhi, etc.) for a specific verse. Call this tool immediately if the user asks for a specific Shlok or teaching.",
               parameters: {
-                type: "OBJECT",
+                type: Type.OBJECT,
                 properties: {
                   search_query: {
-                    type: "STRING",
+                    type: Type.STRING,
                     description: "The keywords to search for. Translate Hinglish to pure English or Devanagari if needed. (e.g., '1st shlok of Radha Sudha Nidhi')"
                   }
                 },
@@ -472,10 +472,10 @@ export default function Chatbot({ isOpen, setIsOpen }: ChatbotProps) {
               name: "search_gita",
               description: "Search the Bhagavad Gita for guidance on a specific life problem or topic.",
               parameters: {
-                type: "OBJECT",
+                type: Type.OBJECT,
                 properties: {
                   search_query: {
-                    type: "STRING",
+                    type: Type.STRING,
                     description: "The life problem or topic to search for in the Gita (e.g. 'anxiety', 'loss', 'purpose')."
                   }
                 },
