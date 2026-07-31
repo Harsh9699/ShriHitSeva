@@ -428,7 +428,7 @@ export default function Chatbot({ isOpen, setIsOpen }: ChatbotProps) {
       
       let displayMessage = `Forgive me, I encountered an error: ${error.message?.substring(0, 150) || "Unable to reach the spiritual guide."}`;
       if (isApiKeyError) {
-        displayMessage = "The spiritual connection (API) seems misconfigured. Please check the API key in the platform settings.";
+        displayMessage = `Error 400 (Please send this to the developer): ${error.message}`;
       }
       
       setMessagesHarivanshi(prev => [...prev, { 
@@ -530,7 +530,7 @@ export default function Chatbot({ isOpen, setIsOpen }: ChatbotProps) {
       
       let displayMessage = `Forgive me, I encountered an error: ${error.message?.substring(0, 150) || "Unable to reach the spiritual guide."}`;
       if (isApiKeyError) {
-        displayMessage = "The spiritual connection (API) seems misconfigured. Please check the API key in the platform settings.";
+        displayMessage = `Error 400 (Please send this to the developer): ${error.message}`;
       }
       
       setMessagesGita(prev => [...prev, { 
@@ -579,7 +579,7 @@ export default function Chatbot({ isOpen, setIsOpen }: ChatbotProps) {
                 </div>
                 <div>
                   <div className="font-display text-sm text-[var(--color-ink)] flex items-center gap-1.5 font-semibold">
-                    {language === 'hi' ? 'आध्यात्मिक साथी एआई' : 'Spiritual Companions AI'}
+                    {language === 'hi' ? 'आध्यात्मिक साथी एआई v2' : 'Spiritual Companions AI v2'}
                   </div>
                   <div className="text-[10px] text-[var(--color-inmu)] uppercase tracking-widest font-semibold">
                     {language === 'hi' ? 'दिव्य परामर्शदाता' : 'Divine Counselors'}
