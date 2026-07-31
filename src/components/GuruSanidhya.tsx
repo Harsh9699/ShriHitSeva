@@ -330,7 +330,7 @@ export default function GuruSanidhya() {
           </div>
 
           {/* Sadhguru Scolding Audio Trigger */}
-      <audio ref={audioRef} src="/scold.mp3" preload="auto" />
+      <audio ref={audioRef} src="/scold.mp3" preload="auto" loop />
 
       {/* Picture-in-Picture Webcam */}
           <div className="absolute bottom-6 right-6 w-48 aspect-video bg-black rounded-2xl overflow-hidden shadow-2xl border-2 border-white/20 z-30 transform transition-transform hover:scale-105">
