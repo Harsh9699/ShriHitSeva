@@ -9,6 +9,7 @@ export default function GuruSanidhya() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [sessionStarted, setSessionStarted] = useState(false);
   const [isInitializing, setIsInitializing] = useState(true);
   const [hasCameraPermission, setHasCameraPermission] = useState<boolean | null>(null);
   const [errorMsg, setErrorMsg] = useState<string>("");
@@ -25,6 +26,7 @@ export default function GuruSanidhya() {
   const distractionStartRef = useRef<number | null>(null);
 
   useEffect(() => {
+    if (!sessionStarted) return;
     let active = true;
 
     const initializeTracker = async () => {
@@ -108,7 +110,7 @@ export default function GuruSanidhya() {
         faceLandmarkerRef.current.close();
       }
     };
-  }, []);
+  }, [sessionStarted]);
 
   const detectFaces = () => {
     const video = videoRef.current;
@@ -218,7 +220,32 @@ export default function GuruSanidhya() {
         </p>
       </div>
 
-      {isInitializing && (
+      {!sessionStarted && (
+        <div className="w-full max-w-3xl mx-auto aspect-video rounded-3xl glass-card flex flex-col items-center justify-center p-12 text-center">
+          <Eye className="w-16 h-16 text-[var(--color-gold)] mb-6 opacity-80" />
+          <h3 className="font-display text-3xl text-[var(--color-ink)] mb-4">Begin Your Sadhana</h3>
+          <p className="font-body text-[var(--color-inm)] max-w-md mx-auto mb-8">
+            The Guru Sanidhya environment requires your camera to monitor your focus. Your video is processed completely securely on your device and never sent to the internet.
+          </p>
+          <button
+            onClick={() => {
+              setIsInitializing(true);
+              setHasCameraPermission(null);
+              setErrorMsg('');
+              setIsDistracted(false);
+              isDistractedRef.current = false;
+              setIsTracking(false);
+              isTrackingRef.current = false;
+              setSessionStarted(true);
+            }}
+            className="px-8 py-4 bg-linear-to-r from-[var(--color-honey)] to-[var(--color-saffron)] text-[var(--color-ink)] rounded-full font-bold tracking-widest uppercase hover:-translate-y-1 hover:shadow-xl transition-all"
+          >
+            Enter Sanctuary
+          </button>
+        </div>
+      )}
+
+      {sessionStarted && isInitializing && (
         <div className="w-full max-w-3xl mx-auto aspect-video rounded-3xl glass-card flex flex-col items-center justify-center p-12">
           <Loader2 className="w-12 h-12 text-[var(--color-gold)] animate-spin mb-4" />
           <h3 className="font-display text-2xl text-[var(--color-ink)] mb-2">Preparing the Sanctuary</h3>
@@ -226,7 +253,7 @@ export default function GuruSanidhya() {
         </div>
       )}
       
-      {!isInitializing && hasCameraPermission === false && (
+      {sessionStarted && !isInitializing && hasCameraPermission === false && (
         <div className="w-full max-w-3xl mx-auto aspect-video rounded-3xl glass-card border-red-200/50 flex flex-col items-center justify-center p-12 text-center bg-red-50/50">
           <AlertCircle className="w-12 h-12 text-red-500 mb-4" />
           <h3 className="font-display text-2xl text-[var(--color-ink)] mb-2">Initialization Failed</h3>
@@ -240,7 +267,13 @@ export default function GuruSanidhya() {
       )}
       
       {/* ALWAYS render the video so videoRef is never null, just hide it visually until initialized */}
-      <div className={`relative w-full max-w-4xl mx-auto ${isInitializing || hasCameraPermission === false ? 'hidden' : 'block'}`}>
+      <div className={`relative w-full max-w-4xl mx-auto ${!sessionStarted || isInitializing || hasCameraPermission === false ? 'hidden' : 'block'}`}>
+          <button
+            onClick={() => setSessionStarted(false)}
+            className="absolute -top-12 right-0 px-4 py-2 bg-red-500/10 text-red-500 rounded-full font-bold text-sm hover:bg-red-500/20 transition-colors z-40"
+          >
+            End Session
+          </button>
           
           {/* Main Visual Environment */}
           <div className="w-full aspect-[21/9] rounded-[40px] overflow-hidden shadow-2xl relative border-4 border-white/50 bg-[var(--color-warm)]">
