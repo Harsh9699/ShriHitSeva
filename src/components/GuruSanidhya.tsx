@@ -13,8 +13,10 @@ export default function GuruSanidhya() {
   const [hasCameraPermission, setHasCameraPermission] = useState<boolean | null>(null);
   const [errorMsg, setErrorMsg] = useState<string>("");
   const [isDistracted, setIsDistracted] = useState(false);
+  const isDistractedRef = useRef(false);
   const [distractionReason, setDistractionReason] = useState<string>('');
   const [isTracking, setIsTracking] = useState(false);
+  const isTrackingRef = useRef(false);
 
   // Core tracking state refs
   const faceLandmarkerRef = useRef<FaceLandmarker | null>(null);
@@ -77,6 +79,7 @@ export default function GuruSanidhya() {
           });
           
           if (active) {
+            isTrackingRef.current = true;
             setIsTracking(true);
             setIsInitializing(false);
             detectFaces();
@@ -112,7 +115,7 @@ export default function GuruSanidhya() {
     const canvas = canvasRef.current;
     const landmarker = faceLandmarkerRef.current;
 
-    if (!video || !landmarker || !isTracking) return;
+    if (!video || !landmarker || !isTrackingRef.current) return;
 
     if (video.currentTime !== lastVideoTimeRef.current) {
       lastVideoTimeRef.current = video.currentTime;
@@ -152,7 +155,8 @@ export default function GuruSanidhya() {
     } else {
       // Alert after 3 seconds of continuous distraction
       if (now - distractionStartRef.current > 3000) {
-        if (!isDistracted) {
+        if (!isDistractedRef.current) {
+          isDistractedRef.current = true;
           setIsDistracted(true);
           setDistractionReason(reason);
           // Play the Sadhguru scolding audio
@@ -167,7 +171,8 @@ export default function GuruSanidhya() {
 
   const clearDistraction = () => {
     distractionStartRef.current = null;
-    if (isDistracted) {
+    if (isDistractedRef.current) {
+      isDistractedRef.current = false;
       setIsDistracted(false);
       setDistractionReason('');
       if (audioRef.current) {
