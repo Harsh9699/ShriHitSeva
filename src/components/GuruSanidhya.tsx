@@ -129,18 +129,40 @@ export default function GuruSanidhya() {
       if (results.faceLandmarks.length === 0) {
         // No face detected
         handleDistraction(now, "Please sit in front of the camera.");
-      } else if (results.facialTransformationMatrixes && results.facialTransformationMatrixes.length > 0) {
-        // Face is present, check orientation
-        const matrix = results.facialTransformationMatrixes[0].data;
-        // In mediapipe, yaw roughly corresponds to matrix[8] (sin(yaw)).
-        const yaw = Math.asin(Math.max(-1, Math.min(1, matrix[8]))) * (180 / Math.PI);
-        const pitch = Math.asin(Math.max(-1, Math.min(1, -matrix[9]))) * (180 / Math.PI);
-        
-        // If head is turned more than 30 degrees left/right or up/down significantly
-        if (Math.abs(yaw) > 30 || pitch > 30 || pitch < -25) {
-          handleDistraction(now, "Your mind is wandering. Return your focus to the Divine Name.");
+      } else {
+        let isStrictlyDistracted = false;
+        let reason = "";
+
+        // 1. Strict Head Pose (Looking around or down at a phone)
+        if (results.facialTransformationMatrixes && results.facialTransformationMatrixes.length > 0) {
+          const matrix = results.facialTransformationMatrixes[0].data;
+          const yaw = Math.asin(Math.max(-1, Math.min(1, matrix[8]))) * (180 / Math.PI);
+          const pitch = Math.asin(Math.max(-1, Math.min(1, -matrix[9]))) * (180 / Math.PI);
+          
+          // Tightened from 30 degrees to 15 degrees!
+          if (Math.abs(yaw) > 15 || pitch > 15 || pitch < -15) {
+            isStrictlyDistracted = true;
+            reason = "Your focus is wandering. Keep your head straight and focus on Naam Jap.";
+          }
+        }
+
+        // 2. Strict Mischief/Laughing Detection (using AI Blendshapes)
+        if (!isStrictlyDistracted && results.faceBlendshapes && results.faceBlendshapes.length > 0) {
+          const blendshapes = results.faceBlendshapes[0].categories;
+          const getScore = (name: string) => blendshapes.find(b => b.categoryName === name)?.score || 0;
+          
+          const smileL = getScore('mouthSmileLeft');
+          const smileR = getScore('mouthSmileRight');
+          
+          if (smileL > 0.35 || smileR > 0.35) {
+            isStrictlyDistracted = true;
+            reason = "Are you laughing or distracted? Maintain the absolute sanctity of your Sadhana.";
+          }
+        }
+
+        if (isStrictlyDistracted) {
+          handleDistraction(now, reason);
         } else {
-          // User is focused
           clearDistraction();
         }
       }
@@ -153,8 +175,8 @@ export default function GuruSanidhya() {
     if (!distractionStartRef.current) {
       distractionStartRef.current = now;
     } else {
-      // Alert after 3 seconds of continuous distraction
-      if (now - distractionStartRef.current > 3000) {
+      // Alert after 1.5 seconds of continuous distraction (STRICT MODE)
+      if (now - distractionStartRef.current > 1500) {
         if (!isDistractedRef.current) {
           isDistractedRef.current = true;
           setIsDistracted(true);
