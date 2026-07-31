@@ -27,14 +27,14 @@ export default function GuruSanidhya() {
       try {
         // Load MediaPipe WASM files from CDN
         const vision = await FilesetResolver.forVisionTasks(
-          "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.12/wasm"
+          "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/wasm"
         );
 
         // Initialize FaceLandmarker
         const landmarker = await FaceLandmarker.createFromOptions(vision, {
           baseOptions: {
             modelAssetPath: "https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task",
-            delegate: "GPU"
+            delegate: "CPU"
           },
           outputFaceBlendshapes: true,
           outputFacialTransformationMatrixes: true,
