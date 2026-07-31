@@ -370,10 +370,10 @@ export default function Chatbot({ isOpen, setIsOpen }: ChatbotProps) {
               name: "search_scriptures",
               description: "Search the sacred Vaanis (like Hit Chaurasi, Radha Sudha Nidhi, etc.) for a specific verse. Call this tool immediately if the user asks for a specific Shlok or teaching.",
               parameters: {
-                type: Type.OBJECT,
+                type: "OBJECT",
                 properties: {
                   search_query: {
-                    type: Type.STRING,
+                    type: "STRING",
                     description: "The keywords to search for. Translate Hinglish to pure English or Devanagari if needed. (e.g., '1st shlok of Radha Sudha Nidhi')"
                   }
                 },
@@ -472,10 +472,10 @@ export default function Chatbot({ isOpen, setIsOpen }: ChatbotProps) {
               name: "search_gita",
               description: "Search the Bhagavad Gita for guidance on a specific life problem or topic.",
               parameters: {
-                type: Type.OBJECT,
+                type: "OBJECT",
                 properties: {
                   search_query: {
-                    type: Type.STRING,
+                    type: "STRING",
                     description: "The life problem or topic to search for in the Gita (e.g. 'anxiety', 'loss', 'purpose')."
                   }
                 },
