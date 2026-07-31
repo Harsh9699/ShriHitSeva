@@ -7,6 +7,7 @@ import { Camera, AlertCircle, Eye, EyeOff, Loader2 } from 'lucide-react';
 export default function GuruSanidhya() {
   const { t } = useLanguage();
   const videoRef = useRef<HTMLVideoElement>(null);
+  const audioRef = useRef<HTMLAudioElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isInitializing, setIsInitializing] = useState(true);
   const [hasCameraPermission, setHasCameraPermission] = useState<boolean | null>(null);
@@ -151,8 +152,15 @@ export default function GuruSanidhya() {
     } else {
       // Alert after 3 seconds of continuous distraction
       if (now - distractionStartRef.current > 3000) {
-        setIsDistracted(true);
-        setDistractionReason(reason);
+        if (!isDistracted) {
+          setIsDistracted(true);
+          setDistractionReason(reason);
+          // Play the Sadhguru scolding audio
+          if (audioRef.current) {
+            audioRef.current.currentTime = 0;
+            audioRef.current.play().catch(e => console.error("Audio playback failed:", e));
+          }
+        }
       }
     }
   };
@@ -162,6 +170,10 @@ export default function GuruSanidhya() {
     if (isDistracted) {
       setIsDistracted(false);
       setDistractionReason('');
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+      }
     }
   };
 
@@ -257,7 +269,10 @@ export default function GuruSanidhya() {
             </div>
           </div>
 
-          {/* Picture-in-Picture Webcam */}
+          {/* Sadhguru Scolding Audio Trigger */}
+      <audio ref={audioRef} src="/scold.mp3" preload="auto" />
+
+      {/* Picture-in-Picture Webcam */}
           <div className="absolute bottom-6 right-6 w-48 aspect-video bg-black rounded-2xl overflow-hidden shadow-2xl border-2 border-white/20 z-30 transform transition-transform hover:scale-105">
             <video 
               ref={videoRef} 
