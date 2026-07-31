@@ -403,184 +403,129 @@ export default function JapCounter() {
       </div>
 
       {/* Stairs Animation Section */}
-      <div className="w-full max-w-[620px] h-[340px] relative mb-12 glass-card rounded-[40px] overflow-hidden group">
-        {/* Vrindavan Background Accents */}
-        <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          {/* Govardhan Silhouettes */}
-          <svg className="absolute bottom-0 left-0 w-full h-full opacity-10" viewBox="0 0 600 300" preserveAspectRatio="none">
-            <path d="M0,300 L0,250 Q100,200 200,250 T400,220 T600,260 L600,300 Z" fill="var(--color-ink)" />
-          </svg>
-          
-          {/* Yamuna River with better waves */}
-          <div className="absolute bottom-0 left-0 w-full h-16 bg-linear-to-t from-[var(--color-honey)]/30 to-transparent">
-            <svg className="w-full h-full opacity-40" viewBox="0 0 600 100" preserveAspectRatio="none">
-              <motion.path 
-                d="M0 50 C 150 100 450 0 600 50 L 600 100 L 0 100 Z" 
-                fill="var(--color-saffron)"
-                animate={{ d: ["M0 50 C 150 100 450 0 600 50 L 600 100 L 0 100 Z", "M0 50 C 150 0 450 100 600 50 L 600 100 L 0 100 Z"] }}
-                transition={{ repeat: Infinity, duration: 5, ease: "easeInOut" }}
-              />
-            </svg>
-          </div>
-          
-          {/* Trees (Kunj) */}
-          <motion.div 
-            animate={{ y: [0, -5, 0] }}
-            transition={{ repeat: Infinity, duration: 4 }}
-            className="absolute top-12 left-8 text-5xl opacity-20 filter blur-[1px]"
-          >
-            🌳
-          </motion.div>
-          <motion.div 
-            animate={{ y: [0, -7, 0] }}
-            transition={{ repeat: Infinity, duration: 5, delay: 1 }}
-            className="absolute top-24 right-16 text-6xl opacity-15 filter blur-[2px]"
-          >
-            🌳
-          </motion.div>
-        </div>
+      <div 
+        className="w-full max-w-[700px] h-[360px] relative mx-auto mb-12 rounded-[40px] overflow-hidden group shadow-2xl border-4 border-white/40"
+        style={{ backgroundImage: 'url(/vrindavan_bg.jpg)', backgroundSize: 'cover', backgroundPosition: 'center' }}
+      >
+        {/* Magical overlays */}
+        <div className="absolute inset-0 bg-linear-to-t from-black/40 via-transparent to-transparent pointer-events-none" />
+        <div className="absolute inset-0 mix-blend-overlay bg-linear-to-tr from-[var(--color-gold)]/20 to-transparent pointer-events-none" />
         
         {/* Stairs Path Visualization */}
-        <div className="absolute inset-0 flex items-end justify-start p-10">
+        <div className="absolute inset-0 flex items-end justify-start p-6 pb-12">
           <svg className="w-full h-full overflow-visible" viewBox="0 0 400 200">
+            <defs>
+              <linearGradient id="goldGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stopColor="#fef08a" />
+                <stop offset="50%" stopColor="#eab308" />
+                <stop offset="100%" stopColor="#a16207" />
+              </linearGradient>
+              <mask id="doorMask">
+                <path d="M -30 30 L -30 -25 Q -30 -50 0 -50 Q 30 -50 30 -25 L 30 30 Z" fill="white" />
+              </mask>
+            </defs>
+
             {/* The Stairs Structure */}
             {[...Array(12)].map((_, i) => {
               const xStart = 10 + (i * (350 / 11));
-              const yStart = 185 - (i * (155 / 11));
+              const yStart = 175 - (i * (155 / 11));
               return (
                 <g key={i}>
                   <rect 
                     x={xStart} 
                     y={yStart} 
-                    width={25} 
+                    width={28} 
                     height={8} 
-                    fill="rgba(196,154,42,0.2)" 
-                    rx="2"
-                    stroke="var(--color-gold)"
-                    strokeWidth="0.5"
-                    className="opacity-60"
+                    fill="url(#goldGradient)" 
+                    rx="3"
+                    className="drop-shadow-lg"
                   />
+                  {/* Step Highlight */}
+                  <rect x={xStart} y={yStart} width={28} height={2} fill="rgba(255,255,255,0.6)" rx="1" />
+                  
                   {/* Glowing step if devotee is near */}
                   {Math.abs(count - (i * ((MALA_SIZE * targetMalas) / 11))) < ((MALA_SIZE * targetMalas) / 10) && (
                     <motion.rect 
-                      x={xStart} y={yStart} width={25} height={8} fill="var(--color-gold)" rx="2"
-                      animate={{ opacity: [0.2, 0.6, 0.2] }}
+                      x={xStart-2} y={yStart-2} width={32} height={12} fill="var(--color-gold)" rx="4"
+                      animate={{ opacity: [0, 0.8, 0] }}
                       transition={{ repeat: Infinity, duration: 1.5 }}
                     />
                   )}
                 </g>
               );
             })}
-            
-            {/* Path Guide */}
-            <path 
-              d="M 22 185 L 372 30" 
-              stroke="var(--color-gold)" 
-              strokeWidth="0.5" 
-              strokeDasharray="2 4" 
-              fill="none" 
-              className="opacity-10"
-            />
 
-            {/* Destination: The Radiant Kunj Gate - Positioned at the TOP RIGHT end of stairs */}
+            {/* Destination: The Radiant Nikunj Gate */}
             <motion.g 
               animate={{ 
-                scale: count >= MALA_SIZE * targetMalas - 5 ? [1, 1.2, 1] : 1,
-                filter: count >= MALA_SIZE * targetMalas - 5 ? ["drop-shadow(0 0 5px gold)", "drop-shadow(0 0 20px gold)"] : "none"
+                scale: count >= MALA_SIZE * targetMalas - 5 ? [1, 1.1, 1] : 1,
+                filter: count >= MALA_SIZE * targetMalas - 5 ? ["drop-shadow(0 0 10px gold)", "drop-shadow(0 0 40px gold)"] : "drop-shadow(0 0 15px rgba(212,175,55,0.6))"
               }}
-              transition={{ repeat: Infinity, duration: 1 }}
-              transform="translate(380, 25)"
+              transition={{ repeat: Infinity, duration: 1.5 }}
+              transform="translate(365, 20)"
             >
-              {/* Ornate Nikunj Temple Gate */}
-              <path d="M -35 20 L -35 -15 Q -35 -45 -15 -55 Q 0 -62 15 -55 Q 35 -45 35 -15 L 35 20" fill="rgba(255,255,255,0.95)" stroke="var(--color-gold)" strokeWidth="3" />
-              <path d="M -25 20 L -25 -12 Q -25 -35 -10 -42 Q 0 -48 10 -42 Q 25 -35 25 -12 L 25 20" fill="var(--color-cream)" stroke="var(--color-saffron)" strokeWidth="1.5" />
+              {/* Backlight glow */}
+              <circle cx="0" cy="-20" r="40" fill="var(--color-gold)" className="opacity-20 animate-pulse" />
               
-              {/* Divine Sun/Chakra behind text */}
-              <circle cx="0" cy="-35" r="9" fill="var(--color-gold)" className="opacity-40 animate-pulse" />
-              <path d="M 0 -48 L 0 -22 M -13 -35 L 13 -35 M -9 -44 L 9 -26 M -9 -26 L 9 -44" stroke="var(--color-gold)" strokeWidth="1" className="opacity-30" />
+              <image 
+                href="/nikunj_door.jpg" 
+                x="-30" y="-50" width="60" height="80" 
+                preserveAspectRatio="xMidYMid slice"
+                mask="url(#doorMask)"
+              />
+              <path d="M -30 30 L -30 -25 Q -30 -50 0 -50 Q 30 -50 30 -25 L 30 30 Z" fill="none" stroke="#fef08a" strokeWidth="2.5" />
               
               <motion.text 
-                y="-15" textAnchor="middle" 
-                className="font-devanagari text-[13px] fill-[var(--color-saffron)] font-bold drop-shadow-sm"
-                animate={{ opacity: [0.8, 1, 0.8] }}
+                y="45" textAnchor="middle" 
+                className="font-devanagari text-[14px] fill-white font-bold drop-shadow-md"
+                animate={{ opacity: [0.7, 1, 0.7] }}
                 transition={{ repeat: Infinity, duration: 2 }}
               >
                 श्री राधा
               </motion.text>
-              
-              <text y="7" textAnchor="middle" className="text-[22px] drop-shadow-md">🪷</text>
-              
-              {/* Nikunj Creepers / Vines */}
-              <path d="M -35 -5 Q -40 5 -35 15 Q -30 22 -35 30" stroke="#4ade80" strokeWidth="2.5" fill="none" strokeLinecap="round" className="opacity-80" />
-              <path d="M 35 -20 Q 40 -10 35 0 Q 30 10 35 20" stroke="#4ade80" strokeWidth="2.5" fill="none" strokeLinecap="round" className="opacity-80" />
-              <path d="M -35 -20 Q -30 -25 -25 -20" stroke="#22c55e" strokeWidth="2" fill="none" strokeLinecap="round" />
-              <path d="M 35 5 Q 30 0 25 5" stroke="#22c55e" strokeWidth="2" fill="none" strokeLinecap="round" />
-              
-              {/* Divine Light Beams (Only near end) */}
-              {count >= MALA_SIZE * targetMalas - 10 && [...Array(8)].map((_, i) => (
-                <motion.line
-                  key={i}
-                  x1="0" y1="-10" x2={Math.cos(i * (Math.PI / 4)) * 50} y2={Math.sin(i * (Math.PI / 4)) * 50}
-                  stroke="var(--color-gold)"
-                  strokeWidth="1"
-                  animate={{ opacity: [0, 0.5, 0], scale: [0.5, 1] }}
-                  transition={{ repeat: Infinity, duration: 1.5, delay: i * 0.2 }}
-                />
-              ))}
             </motion.g>
 
             {/* Devotee Walker */}
             <motion.g
               animate={{ 
-                x: 22 + (count / (MALA_SIZE * targetMalas)) * 350,
-                y: 185 - (count / (MALA_SIZE * targetMalas)) * 155
+                x: 25 + (count / (MALA_SIZE * targetMalas)) * 350,
+                y: 175 - (count / (MALA_SIZE * targetMalas)) * 155
               }}
-              transition={{ type: 'spring', stiffness: 45, damping: 18 }}
+              transition={{ type: 'spring', stiffness: 50, damping: 15 }}
             >
               <motion.g
                 animate={{ 
-                  rotate: isVibrating ? [-5, 5, 0] : [0, 1, 0],
-                  y: isVibrating ? -8 : 0
+                  rotate: isVibrating ? [-10, 10, 0] : [0, 2, 0],
+                  y: isVibrating ? -15 : 0
                 }}
-                transition={{ duration: 0.15 }}
+                transition={{ duration: 0.2 }}
               >
                 {/* Glow under feet */}
-                {isVibrating && (
-                  <motion.circle 
-                    r="10" fill="var(--color-gold)" 
-                    initial={{ opacity: 0.8, scale: 0 }}
-                    animate={{ opacity: 0, scale: 2.5 }}
-                    className="pointer-events-none"
-                  />
-                )}
+                <motion.circle 
+                  r="15" fill="var(--color-gold)" 
+                  initial={{ opacity: 0.5, scale: 1 }}
+                  animate={{ opacity: isVibrating ? 0 : 0.5, scale: isVibrating ? 2.5 : 1 }}
+                  transition={{ duration: 0.3 }}
+                  className="pointer-events-none mix-blend-screen"
+                />
 
-                {/* Devotee Kneeling Silhouette */}
-                <g className="drop-shadow-sm">
-                  {/* Kneeling Body wrapped in shawl */}
-                  <path d="M -4 0 C -14 0 -16 -12 -12 -20 C -7 -28 3 -25 8 -20 C 14 -12 12 0 4 0 Z" fill="var(--color-saffron)" stroke="var(--color-saffron)" strokeWidth="1.5" strokeLinejoin="round" />
-                  
-                  {/* Head/Face slightly bowed */}
-                  <circle cx="4" cy="-27" r="5" fill="var(--color-ink)" />
-                  <path d="M 7 -29 Q 10 -27 7 -25" stroke="var(--color-saffron)" strokeWidth="1" fill="none" strokeLinecap="round" />
-                  <path d="M -1 -25 Q -4 -25 -4 -22" stroke="white" strokeWidth="1" fill="none" className="opacity-40" />
-                  
-                  {/* Folded Hands (Anjali Mudra) pointing towards the gate */}
-                  <path d="M 6 -16 L 14 -19 L 14 -17 Z" fill="#fbcfe8" />
-                  <path d="M 3 -13 L 13 -18 L 6 -20" stroke="var(--color-ink)" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-                  
-                  {/* Dhoti / lower garment detail */}
-                  <path d="M -2 -5 L -2 0" stroke="rgba(0,0,0,0.1)" strokeWidth="1" />
-                </g>
+                {/* AI Devotee Sprite with Multiply Blend to remove white background */}
+                <image 
+                  href="/devotee_sprite.jpg" 
+                  x="-20" y="-38" width="40" height="40" 
+                  style={{ mixBlendMode: 'multiply' }}
+                  className="opacity-95"
+                />
                 
                 {/* Rising Mantra Text */}
                 <AnimatePresence>
                   {isVibrating && (
                     <motion.text
-                      initial={{ opacity: 0, y: -35, scale: 0.5 }}
-                      animate={{ opacity: 1, y: -65, scale: 1.2 }}
+                      initial={{ opacity: 0, y: -40, scale: 0.5 }}
+                      animate={{ opacity: 1, y: -70, scale: 1.3 }}
                       exit={{ opacity: 0 }}
                       textAnchor="middle"
-                      className="font-devanagari text-[12px] fill-[var(--color-gold)] font-bold pointer-events-none drop-shadow-md"
+                      className="font-devanagari text-[16px] fill-[var(--color-gold)] font-bold pointer-events-none drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]"
                     >
                       {activeName.split(' ')[0]}
                     </motion.text>
@@ -591,21 +536,19 @@ export default function JapCounter() {
           </svg>
         </div>
 
-        {/* Milestone Progress Bar (The Path to Goal) */}
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 w-[80%] h-1 bg-black/5 rounded-full overflow-hidden">
+        {/* Milestone Progress Bar */}
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 w-[85%] h-1.5 bg-black/30 rounded-full overflow-hidden backdrop-blur-sm border border-white/10">
           <motion.div 
-            className="h-full bg-linear-to-r from-[var(--color-gold)] to-[var(--color-saffron)] shadow-[0_0_10px_rgba(196,154,42,0.5)]"
+            className="h-full bg-linear-to-r from-[var(--color-gold)] via-yellow-300 to-[var(--color-saffron)] shadow-[0_0_15px_rgba(253,224,71,0.8)]"
             animate={{ width: `${calculateProgress()}%` }}
           />
         </div>
 
-        <div className="absolute top-6 left-1/2 -translate-x-1/2 font-body text-[10px] tracking-[0.3em] uppercase text-[var(--color- gold)] flex items-center gap-2 whitespace-nowrap">
-          <span className="w-2 h-2 bg-[var(--color-saffron)] rounded-full animate-ping" />
-          {t('jap.path')}
+        <div className="absolute top-6 left-1/2 -translate-x-1/2 font-body text-[11px] tracking-[0.4em] uppercase text-white drop-shadow-md flex items-center gap-3 whitespace-nowrap bg-black/20 px-4 py-1.5 rounded-full backdrop-blur-md border border-white/20">
+          <span className="w-2 h-2 bg-[var(--color-gold)] rounded-full animate-ping" />
+          The Path of Nitya Vihar
         </div>
       </div>
-
-
 
       <div className="relative w-72 h-72 md:w-80 md:h-80 flex items-center justify-center">
         {/* Progress Ring Background */}
