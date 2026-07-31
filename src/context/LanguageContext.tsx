@@ -16,6 +16,7 @@ const translations = {
     'nav.calendar': 'Calendar',
     'nav.philosophy': 'Philosophy',
     'nav.naamJap': 'Naam Jap',
+    'nav.sanidhya': 'Guru Sanidhya',
     'nav.community': 'Community',
     'nav.explore': 'Explore',
     
@@ -45,6 +46,7 @@ const translations = {
     'nav.calendar': 'उत्सव कैलेंडर',
     'nav.philosophy': 'दर्शन',
     'nav.naamJap': 'नाम जप',
+    'nav.sanidhya': 'गुरु सान्निध्य',
     'nav.community': 'समुदाय',
     'nav.explore': 'खोजें',
     

@@ -35,7 +35,7 @@ export default function Navbar({ activePage, onPageChange }: NavbarProps) {
     }
   };
 
-  const navLinks = ['home', 'vaanis', 'calendar', 'philosophy', 'jap', 'community'];
+  const navLinks = ['home', 'vaanis', 'calendar', 'philosophy', 'jap', 'sanidhya', 'community'];
 
   return (
     <>

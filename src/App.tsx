@@ -10,6 +10,7 @@ import Navbar from './components/Navbar';
 import Home from './components/Home';
 import VaaniLibrary from './components/VaaniLibrary';
 import JapCounter from './components/JapCounter';
+import GuruSanidhya from './components/GuruSanidhya';
 import UtsavCalendar from './components/UtsavCalendar';
 import Philosophy from './components/Philosophy';
 import Community from './components/Community';
@@ -79,6 +80,7 @@ export default function App() {
             {activePage === 'vaanis' && <VaaniLibrary />}
             {activePage === 'calendar' && <UtsavCalendar />}
             {activePage === 'jap' && <JapCounter />}
+            {activePage === 'sanidhya' && <GuruSanidhya />}
             {activePage === 'philosophy' && <Philosophy />}
             {activePage === 'community' && <Community />}
           </motion.div>
