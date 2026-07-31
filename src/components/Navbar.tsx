@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useLanguage } from '../context/LanguageContext';
-import { Menu, X, Download } from 'lucide-react';
+import { Menu, X, Download, RefreshCw } from 'lucide-react';
 
 interface NavbarProps {
   activePage: string;
@@ -32,6 +32,20 @@ export default function Navbar({ activePage, onPageChange }: NavbarProps) {
     const { outcome } = await deferredPrompt.userChoice;
     if (outcome === 'accepted') {
       setDeferredPrompt(null);
+    }
+  };
+
+
+  const handleForceUpdate = () => {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(function(registrations) {
+        for(let registration of registrations) {
+          registration.unregister();
+        }
+        window.location.reload();
+      });
+    } else {
+      window.location.reload();
     }
   };
 
@@ -88,6 +102,15 @@ export default function Navbar({ activePage, onPageChange }: NavbarProps) {
                 <Download size={14} /> Install App
               </button>
             )}
+
+            
+            <button
+              onClick={handleForceUpdate}
+              className="text-[12px] font-bold text-[var(--color-ink)] hover:text-red-600 transition-colors cursor-pointer px-2 py-1 rounded-md border border-[var(--color-gold)]/40 hover:border-red-500 hover:bg-red-50"
+              title="Check for Updates"
+            >
+              <RefreshCw size={14} className="inline mr-1 mb-0.5" /> Update
+            </button>
 
             <button
               onClick={() => setLanguage(language === 'en' ? 'hi' : 'en')}
@@ -154,6 +177,17 @@ export default function Navbar({ activePage, onPageChange }: NavbarProps) {
               </ul>
 
               <div className="flex flex-col gap-4 mt-4">
+                
+                <button
+                  onClick={handleForceUpdate}
+                  className="flex items-center justify-between p-4 rounded-2xl bg-white border border-[var(--color-gold)]/20 shadow-sm cursor-pointer"
+                >
+                  <span className="font-body text-[16px] text-[var(--color-ink)] font-semibold">Check for Updates</span>
+                  <span className="text-[14px] font-bold text-white bg-[var(--color-ink)] px-3 py-1 rounded-full flex items-center gap-1">
+                    <RefreshCw size={14} /> Update
+                  </span>
+                </button>
+
                 <button
                   onClick={() => { setLanguage(language === 'en' ? 'hi' : 'en'); setIsMobileMenuOpen(false); }}
                   className="flex items-center justify-between p-4 rounded-2xl bg-white border border-[var(--color-gold)]/20 shadow-sm cursor-pointer"
