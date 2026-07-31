@@ -179,13 +179,15 @@ export default function GuruSanidhya() {
         </p>
       </div>
 
-      {isInitializing ? (
+      {isInitializing && (
         <div className="w-full max-w-3xl mx-auto aspect-video rounded-3xl glass-card flex flex-col items-center justify-center p-12">
           <Loader2 className="w-12 h-12 text-[var(--color-gold)] animate-spin mb-4" />
           <h3 className="font-display text-2xl text-[var(--color-ink)] mb-2">Preparing the Sanctuary</h3>
           <p className="font-body text-[var(--color-inm)]">Loading AI vision models...</p>
         </div>
-      ) : hasCameraPermission === false ? (
+      )}
+      
+      {!isInitializing && hasCameraPermission === false && (
         <div className="w-full max-w-3xl mx-auto aspect-video rounded-3xl glass-card border-red-200/50 flex flex-col items-center justify-center p-12 text-center bg-red-50/50">
           <AlertCircle className="w-12 h-12 text-red-500 mb-4" />
           <h3 className="font-display text-2xl text-[var(--color-ink)] mb-2">Initialization Failed</h3>
@@ -196,8 +198,10 @@ export default function GuruSanidhya() {
             Error: {errorMsg}
           </div>
         </div>
-      ) : (
-        <div className="relative w-full max-w-4xl mx-auto">
+      )}
+      
+      {/* ALWAYS render the video so videoRef is never null, just hide it visually until initialized */}
+      <div className={`relative w-full max-w-4xl mx-auto ${isInitializing || hasCameraPermission === false ? 'hidden' : 'block'}`}>
           
           {/* Main Visual Environment */}
           <div className="w-full aspect-[21/9] rounded-[40px] overflow-hidden shadow-2xl relative border-4 border-white/50 bg-[var(--color-warm)]">
@@ -273,7 +277,6 @@ export default function GuruSanidhya() {
             <div className={`absolute top-3 right-3 w-3 h-3 rounded-full shadow-[0_0_10px_rgba(0,0,0,0.5)] ${isDistracted ? 'bg-red-500 animate-pulse' : 'bg-green-400'}`} />
           </div>
         </div>
-      )}
     </div>
   );
 }
