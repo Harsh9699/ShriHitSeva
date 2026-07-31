@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { FaceLandmarker, FilesetResolver, DrawingUtils } from '@mediapipe/tasks-vision';
 import { motion, AnimatePresence } from 'motion/react';
 import { useLanguage } from '../context/LanguageContext';
-import { Camera, AlertCircle, Eye, EyeOff, Loader2 } from 'lucide-react';
+import { Camera, AlertCircle, Eye, EyeOff, Loader2, Maximize2, Minimize2 } from 'lucide-react';
 
 export default function GuruSanidhya() {
   const { t } = useLanguage();
@@ -18,6 +18,8 @@ export default function GuruSanidhya() {
   const [distractionReason, setDistractionReason] = useState<string>('');
   const [isTracking, setIsTracking] = useState(false);
   const isTrackingRef = useRef(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   // Core tracking state refs
   const faceLandmarkerRef = useRef<FaceLandmarker | null>(null);
@@ -111,6 +113,25 @@ export default function GuruSanidhya() {
       }
     };
   }, [sessionStarted]);
+
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
+  }, []);
+
+  const toggleFullscreen = async () => {
+    if (!document.fullscreenElement) {
+      await containerRef.current?.requestFullscreen().catch(err => {
+        console.error(`Error attempting to enable fullscreen: ${err.message}`);
+      });
+    } else {
+      await document.exitFullscreen();
+    }
+  };
 
   const detectFaces = () => {
     const video = videoRef.current;
@@ -267,16 +288,48 @@ export default function GuruSanidhya() {
       )}
       
       {/* ALWAYS render the video so videoRef is never null, just hide it visually until initialized */}
-      <div className={`relative w-full max-w-4xl mx-auto ${!sessionStarted || isInitializing || hasCameraPermission === false ? 'hidden' : 'block'}`}>
-          <button
-            onClick={() => setSessionStarted(false)}
-            className="absolute -top-12 right-0 px-4 py-2 bg-red-500/10 text-red-500 rounded-full font-bold text-sm hover:bg-red-500/20 transition-colors z-40"
-          >
-            End Session
-          </button>
+      <div 
+        ref={containerRef}
+        className={`relative w-full mx-auto ${
+          isFullscreen ? 'h-screen max-w-none bg-black' : 'max-w-4xl block'
+        } ${!sessionStarted || isInitializing || hasCameraPermission === false ? 'hidden' : ''}`}
+      >
+          {!isFullscreen && (
+            <button
+              onClick={() => setSessionStarted(false)}
+              className="absolute -top-12 right-0 px-4 py-2 bg-red-500/10 text-red-500 rounded-full font-bold text-sm hover:bg-red-500/20 transition-colors z-40"
+            >
+              End Session
+            </button>
+          )}
           
           {/* Main Visual Environment */}
-          <div className="w-full aspect-[4/5] md:aspect-[21/9] min-h-[500px] md:min-h-[auto] rounded-[30px] md:rounded-[40px] overflow-hidden shadow-2xl relative border-4 border-white/50 bg-[var(--color-warm)]">
+          <div className={`w-full relative overflow-hidden bg-[var(--color-warm)] shadow-2xl ${
+            isFullscreen 
+              ? 'h-full rounded-none border-none' 
+              : 'aspect-[4/5] md:aspect-[21/9] min-h-[500px] md:min-h-[auto] rounded-[30px] md:rounded-[40px] border-4 border-white/50'
+          }`}>
+            
+            {/* Fullscreen Toggle Button */}
+            <button
+              onClick={toggleFullscreen}
+              className="absolute top-4 right-4 z-40 p-3 bg-black/40 hover:bg-black/60 text-white rounded-full backdrop-blur-md transition-all"
+            >
+              {isFullscreen ? <Minimize2 className="w-5 h-5" /> : <Maximize2 className="w-5 h-5" />}
+            </button>
+            
+            {/* Close Button in Fullscreen */}
+            {isFullscreen && (
+              <button
+                onClick={() => {
+                  document.exitFullscreen();
+                  setSessionStarted(false);
+                }}
+                className="absolute top-4 left-4 z-40 px-4 py-2 bg-red-500/80 hover:bg-red-500 text-white rounded-full font-bold text-sm backdrop-blur-md transition-colors"
+              >
+                End Session
+              </button>
+            )}
             <div className="absolute inset-0 bg-linear-to-b from-black/20 to-black/60 pointer-events-none z-10" />
             
             {/* Background Image (We reuse the Vrindavan BG) */}
