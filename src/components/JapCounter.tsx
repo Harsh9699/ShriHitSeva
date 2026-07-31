@@ -815,10 +815,10 @@ export default function JapCounter() {
                 const dayName = date.toLocaleDateString(language === 'hi' ? 'hi-IN' : 'en-US', { weekday: 'short' });
 
                 return (
-                  <div key={i} className="flex flex-col items-center gap-2 flex-1 group">
-                    <div className="w-full relative flex items-end justify-center h-full bg-black/5 rounded-t-sm">
+                  <div key={dateStr} className="flex flex-col items-center gap-2 flex-1 group h-full">
+                    <div className="w-full relative flex items-end justify-center flex-1 bg-black/5 rounded-t-sm">
                       <motion.div 
-                        initial={{ height: 0 }}
+                        initial={{ height: '0%' }}
                         animate={{ height: `${height}%` }}
                         transition={{ duration: 1, type: "spring" }}
                         className={`w-full rounded-t-sm transition-all ${
