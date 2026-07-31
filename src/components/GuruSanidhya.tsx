@@ -276,7 +276,7 @@ export default function GuruSanidhya() {
           </button>
           
           {/* Main Visual Environment */}
-          <div className="w-full aspect-[21/9] rounded-[40px] overflow-hidden shadow-2xl relative border-4 border-white/50 bg-[var(--color-warm)]">
+          <div className="w-full aspect-[4/5] md:aspect-[21/9] min-h-[500px] md:min-h-[auto] rounded-[30px] md:rounded-[40px] overflow-hidden shadow-2xl relative border-4 border-white/50 bg-[var(--color-warm)]">
             <div className="absolute inset-0 bg-linear-to-b from-black/20 to-black/60 pointer-events-none z-10" />
             
             {/* Background Image (We reuse the Vrindavan BG) */}
@@ -299,10 +299,10 @@ export default function GuruSanidhya() {
                     exit={{ opacity: 0, scale: 1.1 }}
                     className="flex flex-col items-center text-center px-8"
                   >
-                    <div className="w-20 h-20 bg-red-500/20 rounded-full flex items-center justify-center mb-6 animate-pulse border-2 border-red-500/50 shadow-[0_0_30px_rgba(239,68,68,0.3)]">
-                      <EyeOff className="w-10 h-10 text-red-500" />
+                    <div className="w-40 h-40 md:w-48 md:h-48 rounded-full overflow-hidden mb-6 border-4 border-red-500/80 shadow-[0_0_50px_rgba(239,68,68,0.6)] animate-pulse">
+                      <img src="/saint.jpg" alt="Saint" className="w-full h-full object-cover filter brightness-75 sepia-[0.3]" />
                     </div>
-                    <h2 className="font-display text-4xl text-white mb-4 drop-shadow-lg">
+                    <h2 className="font-display text-3xl md:text-4xl text-white mb-4 drop-shadow-lg">
                       {distractionReason}
                     </h2>
                     <p className="font-body text-[18px] text-red-200 uppercase tracking-widest drop-shadow-md">
@@ -317,10 +317,10 @@ export default function GuruSanidhya() {
                     exit={{ opacity: 0, scale: 1.1 }}
                     className="flex flex-col items-center"
                   >
-                    <div className="w-24 h-24 bg-[var(--color-gold)]/20 rounded-full flex items-center justify-center mb-6 border-2 border-[var(--color-gold)]/50 shadow-[0_0_40px_rgba(212,175,55,0.4)]">
-                      <Eye className="w-10 h-10 text-[var(--color-gold)]" />
+                    <div className="w-44 h-44 md:w-56 md:h-56 rounded-full overflow-hidden mb-6 border-4 border-[var(--color-gold)] shadow-[0_0_50px_rgba(212,175,55,0.5)]">
+                      <img src="/saint.jpg" alt="Saint" className="w-full h-full object-cover" />
                     </div>
-                    <h2 className="font-display text-3xl text-white drop-shadow-lg opacity-90">
+                    <h2 className="font-display text-2xl md:text-3xl text-white drop-shadow-lg opacity-90">
                       The Guru is watching over you.
                     </h2>
                   </motion.div>
