@@ -300,7 +300,7 @@ export default function GuruSanidhya() {
                     className="flex flex-col items-center text-center px-8"
                   >
                     <div className="w-40 h-40 md:w-48 md:h-48 rounded-full overflow-hidden mb-6 border-4 border-red-500/80 shadow-[0_0_50px_rgba(239,68,68,0.6)] animate-pulse">
-                      <img src="/saint.jpg" alt="Saint" className="w-full h-full object-cover filter brightness-75 sepia-[0.3]" />
+                      <img src="/saint2.jpg" alt="Saint Scolding" className="w-full h-full object-cover filter brightness-75 sepia-[0.3]" />
                     </div>
                     <h2 className="font-display text-3xl md:text-4xl text-white mb-4 drop-shadow-lg">
                       {distractionReason}
