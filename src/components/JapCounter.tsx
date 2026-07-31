@@ -803,11 +803,15 @@ export default function JapCounter() {
           <div>
             <div className="font-body text-[11px] uppercase tracking-widest text-[var(--color-gold)] mb-5">Last 7 Days Progress</div>
             <div className="flex items-end gap-2 sm:gap-4 h-32 w-full justify-between px-2">
-              {[...last28Days].slice(21, 28).map((date, i) => {
+              {Array.from({ length: 7 }, (_, i) => {
+                const d = new Date();
+                d.setDate(d.getDate() - (6 - i));
+                return d;
+              }).map((date, i) => {
                 const dateStr = getLocalDateString(date);
                 const progress = sadhanaHistory[dateStr] || 0;
-                const isFuture = date.getTime() > today.getTime();
-                const height = isFuture ? 0 : Math.max(5, progress);
+                const isFuture = false; // Always past/present now
+                const height = Math.max(5, progress);
                 const dayName = date.toLocaleDateString(language === 'hi' ? 'hi-IN' : 'en-US', { weekday: 'short' });
 
                 return (
