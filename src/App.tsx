@@ -18,6 +18,7 @@ import Chatbot from './components/Chatbot';
 import Footer from './components/Footer';
 import AudioPlayer from './components/AudioPlayer';
 import Preloader from './components/Preloader';
+import ReloadPrompt from './components/ReloadPrompt';
 
 export default function App() {
   const [activePage, setActivePage] = useState('home');
@@ -90,6 +91,7 @@ export default function App() {
       <Footer onNavigate={setActivePage} />
       <Chatbot isOpen={isChatOpen} setIsOpen={setIsChatOpen} />
       <AudioPlayer />
+      <ReloadPrompt />
       </div>
     </div>
   );
