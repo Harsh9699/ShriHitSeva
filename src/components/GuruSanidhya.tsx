@@ -352,7 +352,7 @@ export default function GuruSanidhya() {
                     exit={{ opacity: 0, scale: 1.1 }}
                     className="flex flex-col items-center text-center px-8"
                   >
-                    <div className="w-40 h-40 md:w-48 md:h-48 rounded-full overflow-hidden mb-6 border-4 border-red-500/80 shadow-[0_0_50px_rgba(239,68,68,0.6)] animate-pulse">
+                    <div className={`${isFullscreen ? 'w-64 h-64 md:w-96 md:h-96' : 'w-40 h-40 md:w-48 md:h-48'} rounded-full overflow-hidden mb-6 border-4 border-red-500/80 shadow-[0_0_50px_rgba(239,68,68,0.6)] animate-pulse`}>
                       <img src="/saint2.jpg" alt="Saint Scolding" className="w-full h-full object-cover filter brightness-75 sepia-[0.3]" />
                     </div>
                     <h2 className="font-display text-3xl md:text-4xl text-white mb-4 drop-shadow-lg">
@@ -370,7 +370,7 @@ export default function GuruSanidhya() {
                     exit={{ opacity: 0, scale: 1.1 }}
                     className="flex flex-col items-center"
                   >
-                    <div className="w-44 h-44 md:w-56 md:h-56 rounded-full overflow-hidden mb-6 border-4 border-[var(--color-gold)] shadow-[0_0_50px_rgba(212,175,55,0.5)]">
+                    <div className={`${isFullscreen ? 'w-72 h-72 md:w-[450px] md:h-[450px]' : 'w-44 h-44 md:w-56 md:h-56'} rounded-full overflow-hidden mb-6 border-4 border-[var(--color-gold)] shadow-[0_0_50px_rgba(212,175,55,0.5)]`}>
                       <img src="/saint.jpg" alt="Saint" className="w-full h-full object-cover" />
                     </div>
                     <h2 className="font-display text-2xl md:text-3xl text-white drop-shadow-lg opacity-90">
