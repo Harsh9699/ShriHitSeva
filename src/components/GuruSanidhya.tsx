@@ -10,6 +10,7 @@ export default function GuruSanidhya() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isInitializing, setIsInitializing] = useState(true);
   const [hasCameraPermission, setHasCameraPermission] = useState<boolean | null>(null);
+  const [errorMsg, setErrorMsg] = useState<string>("");
   const [isDistracted, setIsDistracted] = useState(false);
   const [distractionReason, setDistractionReason] = useState<string>('');
   const [isTracking, setIsTracking] = useState(false);
@@ -25,13 +26,20 @@ export default function GuruSanidhya() {
 
     const initializeTracker = async () => {
       try {
+        const timeout = (ms: number, promise: Promise<any>, name: string) => {
+          return Promise.race([
+            promise,
+            new Promise((_, reject) => setTimeout(() => reject(new Error(name + " timed out after " + ms + "ms")), ms))
+          ]);
+        };
+
         // Load MediaPipe WASM files from CDN
-        const vision = await FilesetResolver.forVisionTasks(
-          "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/wasm"
-        );
+        const vision = await timeout(10000, FilesetResolver.forVisionTasks(
+          "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.12/wasm"
+        ), "FilesetResolver");
 
         // Initialize FaceLandmarker
-        const landmarker = await FaceLandmarker.createFromOptions(vision, {
+        const landmarker = await timeout(15000, FaceLandmarker.createFromOptions(vision, {
           baseOptions: {
             modelAssetPath: "https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task",
             delegate: "CPU"
@@ -40,16 +48,16 @@ export default function GuruSanidhya() {
           outputFacialTransformationMatrixes: true,
           runningMode: "VIDEO",
           numFaces: 1
-        });
+        }), "FaceLandmarker");
 
         if (!active) return;
         faceLandmarkerRef.current = landmarker;
 
         // Request Camera Access
-        const stream = await navigator.mediaDevices.getUserMedia({ 
+        const stream = await timeout(15000, navigator.mediaDevices.getUserMedia({ 
           video: { facingMode: "user" },
           audio: false
-        });
+        }), "Camera Access (Did you click allow?)");
         
         if (!active) {
           stream.getTracks().forEach(track => track.stop());
@@ -59,17 +67,24 @@ export default function GuruSanidhya() {
         setHasCameraPermission(true);
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
-          videoRef.current.addEventListener("loadeddata", () => {
-            if (active) {
-              setIsTracking(true);
-              setIsInitializing(false);
-              detectFaces();
-            }
+          
+          // Wait for video to actually start playing
+          await new Promise((resolve) => {
+             if (videoRef.current) {
+               videoRef.current.onloadeddata = resolve;
+             }
           });
+          
+          if (active) {
+            setIsTracking(true);
+            setIsInitializing(false);
+            detectFaces();
+          }
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error("Initialization Error:", error);
         if (active) {
+          setErrorMsg(error?.message || String(error));
           setHasCameraPermission(false);
           setIsInitializing(false);
         }
@@ -172,11 +187,14 @@ export default function GuruSanidhya() {
         </div>
       ) : hasCameraPermission === false ? (
         <div className="w-full max-w-3xl mx-auto aspect-video rounded-3xl glass-card border-red-200/50 flex flex-col items-center justify-center p-12 text-center bg-red-50/50">
-          <Camera className="w-12 h-12 text-red-400 mb-4" />
-          <h3 className="font-display text-2xl text-[var(--color-ink)] mb-2">Camera Access Required</h3>
-          <p className="font-body text-[var(--color-inm)] max-w-md">
-            To sit in the presence of the Guru, please allow camera access. Your video is processed entirely on your device and never sent to the internet.
+          <AlertCircle className="w-12 h-12 text-red-500 mb-4" />
+          <h3 className="font-display text-2xl text-[var(--color-ink)] mb-2">Initialization Failed</h3>
+          <p className="font-body text-[var(--color-inm)] max-w-md mb-4">
+            Could not start the tracking environment. Please ensure you have allowed camera access and try refreshing the page.
           </p>
+          <div className="bg-red-100 text-red-800 p-4 rounded-xl font-mono text-sm max-w-lg overflow-auto">
+            Error: {errorMsg}
+          </div>
         </div>
       ) : (
         <div className="relative w-full max-w-4xl mx-auto">
