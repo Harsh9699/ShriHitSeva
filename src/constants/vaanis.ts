@@ -1,3 +1,4 @@
+import { SEVAK_VANI_CHAPTER_1, SEVAK_VANI_CHAPTER_2 } from './sevak_vani';
 import { VaaniSection } from '../types';
 import { HIT_CHAURASI_VAANIS } from './hitchaurasi';
 import { SHRI_HIT_MANGAL_GAAN_VAANIS } from './mangalgann';
@@ -12,6 +13,26 @@ import { BYALEES_LEELA_VAANIS } from './byaleesleela';
 import { SHRI_HIT_RADHA_SUDHA_NIDHI_VAANIS } from './radhasudhanidhi';
 
 export const VAANI_SECTIONS: VaaniSection[] = [
+  {
+    id: 'sevakvani',
+    title: 'Shri Hit Sevak Vani',
+    description: 'The profound teachings and devotional verses of Shri Hit Sevak Ji (Damodar Das Ji).',
+    isGrid: true,
+    vaanis: [],
+    subSections: [
+      {
+        id: 'sv_chap1',
+        title: '1. Shri Hit Jas Vilas Prakaran',
+        vaanis: SEVAK_VANI_CHAPTER_1
+      },
+      {
+        id: 'sv_chap2',
+        title: '2. Shri Hit Ras-Vilas Prakaran',
+        vaanis: SEVAK_VANI_CHAPTER_2
+      }
+    ]
+  },
+
   {
     id: 'mangalacharan',
     label: 'Opening Invocation',
