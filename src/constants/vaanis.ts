@@ -15,6 +15,7 @@ import { SHRI_HIT_RADHA_SUDHA_NIDHI_VAANIS } from './radhasudhanidhi';
 export const VAANI_SECTIONS: VaaniSection[] = [
   {
     id: 'sevakvani',
+    label: 'Sevak Vani',
     title: 'Shri Hit Sevak Vani',
     description: 'The profound teachings and devotional verses of Shri Hit Sevak Ji (Damodar Das Ji).',
     isGrid: true,
