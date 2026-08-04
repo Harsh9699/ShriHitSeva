@@ -27,7 +27,10 @@ export default function Navbar({ activePage, onPageChange }: NavbarProps) {
   }, []);
 
   const handleInstallClick = async () => {
-    if (!deferredPrompt) return;
+    if (!deferredPrompt) {
+      alert("To install the app manually:\n\nFor iPhone/iPad (Safari): Tap the Share icon at the bottom, then scroll down and tap 'Add to Home Screen'.\n\nFor Android (Chrome): Tap the 3-dots menu icon at the top right and select 'Install app' or 'Add to Home screen'.");
+      return;
+    }
     deferredPrompt.prompt();
     const { outcome } = await deferredPrompt.userChoice;
     if (outcome === 'accepted') {
@@ -93,15 +96,13 @@ export default function Navbar({ activePage, onPageChange }: NavbarProps) {
             );
           })}
           <li className="flex items-center gap-3 border-l border-[var(--bdr)] pl-4 ml-2">
-            {deferredPrompt && (
-              <button
-                onClick={handleInstallClick}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[var(--color-gold)]/10 text-[var(--color-ink)] hover:bg-[var(--color-gold)]/20 transition-colors text-[12px] font-semibold cursor-pointer"
-                title="Install App"
-              >
-                <Download size={14} /> Install App
-              </button>
-            )}
+            <button
+              onClick={handleInstallClick}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[var(--color-gold)]/10 text-[var(--color-ink)] hover:bg-[var(--color-gold)]/20 transition-colors text-[12px] font-semibold cursor-pointer"
+              title="Install App"
+            >
+              <Download size={14} /> Install App
+            </button>
 
             
             <button
@@ -131,14 +132,12 @@ export default function Navbar({ activePage, onPageChange }: NavbarProps) {
 
         {/* Mobile Navigation Toggle */}
         <div className="flex md:hidden items-center gap-3">
-          {deferredPrompt && (
-            <button
-              onClick={handleInstallClick}
-              className="p-1.5 rounded-full bg-[var(--color-gold)]/10 text-[var(--color-ink)]"
-            >
-              <Download size={18} />
-            </button>
-          )}
+          <button
+            onClick={handleInstallClick}
+            className="p-1.5 rounded-full bg-[var(--color-gold)]/10 text-[var(--color-ink)]"
+          >
+            <Download size={18} />
+          </button>
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             className="p-2 text-[var(--color-ink)] hover:bg-black/5 rounded-full cursor-pointer transition-colors"
@@ -198,15 +197,13 @@ export default function Navbar({ activePage, onPageChange }: NavbarProps) {
                   </span>
                 </button>
 
-                {deferredPrompt && (
-                  <button
-                    onClick={() => { handleInstallClick(); setIsMobileMenuOpen(false); }}
-                    className="flex items-center justify-center gap-2 p-4 rounded-2xl bg-[var(--color-ink)] text-white shadow-xl cursor-pointer"
-                  >
-                    <Download size={20} />
-                    <span className="font-body text-[16px] font-bold">Install App to Home Screen</span>
-                  </button>
-                )}
+                <button
+                  onClick={() => { handleInstallClick(); setIsMobileMenuOpen(false); }}
+                  className="flex items-center justify-center gap-2 p-4 rounded-2xl bg-[var(--color-ink)] text-white shadow-xl cursor-pointer"
+                >
+                  <Download size={20} />
+                  <span className="font-body text-[16px] font-bold">Install App to Home Screen</span>
+                </button>
               </div>
             </div>
           </motion.div>
