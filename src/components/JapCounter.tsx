@@ -12,6 +12,7 @@ const getLocalDateString = (d: Date) => {
 
 export default function JapCounter() {
   const { t, language } = useLanguage();
+  const [selectedDate, setSelectedDate] = useState(getLocalDateString(new Date()));
   const [count, setCount] = useState(0);
   const [totalMalas, setTotalMalas] = useState(0);
   const [isVibrating, setIsVibrating] = useState(false);
@@ -176,14 +177,8 @@ export default function JapCounter() {
       setEditingRules(baseRules);
     }
     
-    const todayStr = getLocalDateString(new Date());
-    const savedToday = localStorage.getItem(`sadhana_today_${todayStr}`);
-    if (savedToday) {
-      setSadhanaRules(JSON.parse(savedToday));
-    } else {
-      // Initialize today's rules with base rules, resetting current progress
-      setSadhanaRules(baseRules.map(r => ({ ...r, current: 0 })));
-    }
+    // Move the date loading logic to a separate useEffect dependent on selectedDate
+
     const savedGifts = localStorage.getItem('earned_gifts');
     if (savedGifts) {
       setEarnedGifts(JSON.parse(savedGifts));
@@ -229,6 +224,21 @@ export default function JapCounter() {
       }
     }
   }, []);
+
+  // Load rules for selectedDate
+  useEffect(() => {
+    const customRules = localStorage.getItem('sadhana_custom_rules');
+    let baseRules = DEFAULT_RULES;
+    if (customRules) {
+      baseRules = JSON.parse(customRules);
+    }
+    const savedForDate = localStorage.getItem(`sadhana_today_${selectedDate}`);
+    if (savedForDate) {
+      setSadhanaRules(JSON.parse(savedForDate));
+    } else {
+      setSadhanaRules(baseRules.map(r => ({ ...r, current: 0 })));
+    }
+  }, [selectedDate]);
 
   // Request Notification Permission
   useEffect(() => {
@@ -293,15 +303,14 @@ export default function JapCounter() {
   };
 
   const handleSaveProgress = () => {
-    const todayStr = getLocalDateString(new Date());
     const progress = calculateDailyProgress();
     
     setSadhanaHistory(prev => {
-      const newHistory = { ...prev, [todayStr]: progress };
+      const newHistory = { ...prev, [selectedDate]: progress };
       localStorage.setItem('sadhana_history', JSON.stringify(newHistory));
       return newHistory;
     });
-    localStorage.setItem(`sadhana_today_${todayStr}`, JSON.stringify(sadhanaRules));
+    localStorage.setItem(`sadhana_today_${selectedDate}`, JSON.stringify(sadhanaRules));
     
     setIsSavedAnimation(true);
     setTimeout(() => setIsSavedAnimation(false), 2000);
@@ -842,9 +851,10 @@ export default function JapCounter() {
                 return (
                   <div key={i} className="group relative flex items-center justify-center">
                     <div 
-                      className={`w-full aspect-square rounded-md border transition-all flex items-center justify-center ${getHeatmapColor(progress, isFuture)} ${isToday ? 'ring-2 ring-[var(--color-gold)] ring-offset-1' : ''}`}
+                      onClick={() => { if (!isFuture) setSelectedDate(dateStr); }}
+                      className={`w-full aspect-square rounded-md border transition-all flex items-center justify-center ${isFuture ? 'cursor-not-allowed' : 'cursor-pointer hover:scale-110'} ${getHeatmapColor(progress, isFuture)} ${dateStr === selectedDate ? 'ring-2 ring-[var(--color-gold)] ring-offset-1 scale-110' : ''}`}
                     >
-                      {isToday && <span className="text-[10px] sm:text-[12px] opacity-70 drop-shadow-sm font-bold">✓</span>}
+                      {dateStr === selectedDate && <span className="text-[10px] sm:text-[12px] opacity-90 drop-shadow-sm font-bold text-[var(--color-ink)]">✓</span>}
                     </div>
                     {/* Tooltip */}
                     <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-gray-800 text-white text-[10px] rounded opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap z-20">

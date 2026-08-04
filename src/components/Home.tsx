@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'motion/react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 interface HomeProps {
   onNavigate: (page: string) => void;
@@ -12,6 +12,55 @@ export default function Home({ onNavigate, onOpenChat }: HomeProps) {
   const [isImgLoading, setIsImgLoading] = useState(true);
   const [isIshtImgLoading, setIsIshtImgLoading] = useState(true);
   const [isGuruImgLoading, setIsGuruImgLoading] = useState(true);
+  const [maxStreak, setMaxStreak] = useState(0);
+
+  useEffect(() => {
+    const historyData = localStorage.getItem('sadhana_history');
+    if (historyData) {
+      try {
+        const history = JSON.parse(historyData);
+        const dates = Object.keys(history).sort();
+        let currentMax = 0;
+        let currentStreak = 0;
+        let previousDate = null;
+        
+        for (const dateStr of dates) {
+          if (history[dateStr] >= 70) {
+            const currentDate = new Date(dateStr);
+            currentDate.setHours(0, 0, 0, 0);
+            
+            if (!previousDate) {
+              currentStreak = 1;
+            } else {
+              const diffTime = Math.abs(currentDate.getTime() - previousDate.getTime());
+              const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+              
+              if (diffDays === 1) {
+                currentStreak += 1;
+              } else {
+                currentStreak = 1;
+              }
+            }
+            if (currentStreak > currentMax) {
+              currentMax = currentStreak;
+            }
+            previousDate = currentDate;
+          } else {
+            currentStreak = 0;
+            previousDate = null;
+          }
+        }
+        setMaxStreak(currentMax);
+      } catch(e) {}
+    }
+  }, []);
+
+  const earnedBadges = [
+    { type: 'Bronze', label: language === 'hi' ? '1 सप्&#x200D;ताह' : '1 Week', req: 7, icon: '🥉', color: 'from-orange-400 to-amber-700', text: 'text-orange-900', bg: 'bg-orange-100' },
+    { type: 'Silver', label: language === 'hi' ? '1 महीना' : '1 Month', req: 30, icon: '🥈', color: 'from-gray-300 to-gray-500', text: 'text-gray-900', bg: 'bg-gray-100' },
+    { type: 'Gold', label: language === 'hi' ? '3 महीने' : '3 Months', req: 90, icon: '🏆', color: 'from-yellow-300 to-yellow-600', text: 'text-yellow-900', bg: 'bg-yellow-100' }
+  ].filter(b => maxStreak >= b.req);
+
 
   const handlePranam = () => {
     setShowPetals(true);
@@ -89,8 +138,42 @@ export default function Home({ onNavigate, onOpenChat }: HomeProps) {
             className="glass-panel w-full sm:w-auto px-10 py-4 text-[var(--color-ink)] rounded-full font-body text-[16px] tracking-widest uppercase cursor-pointer transition-all duration-300 hover:bg-[rgba(255,255,255,0.8)] hover:border-[var(--color-honey)] hover:-translate-y-1 flex items-center justify-center gap-2 font-bold"
           >
             <span className="text-[18px]">✨</span> {t('home.ask')}
+          
           </button>
         </motion.div>
+
+        {/* Sadhana Badges Section */}
+        <AnimatePresence>
+          {earnedBadges.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.8, duration: 1 }}
+              className="mt-12 relative z-10 flex flex-col items-center"
+            >
+              <div className="font-body text-[11px] tracking-widest uppercase text-[var(--color-gold)] mb-4">
+                {language === 'hi' ? 'आपकी साधना उपलब्धियां' : 'Your Sadhana Achievements'}
+              </div>
+              <div className="flex flex-wrap justify-center gap-4">
+                {earnedBadges.map((badge, i) => (
+                  <motion.div
+                    key={badge.type}
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ delay: 0.9 + i * 0.2 }}
+                    className={`flex items-center gap-3 px-5 py-2.5 rounded-full shadow-lg border border-white/40 ${badge.bg}`}
+                  >
+                    <span className="text-2xl drop-shadow-md">{badge.icon}</span>
+                    <div className="flex flex-col text-left">
+                      <span className={`font-display text-[15px] font-bold ${badge.text} leading-tight`}>{badge.type}</span>
+                      <span className={`font-body text-[10px] tracking-wider uppercase font-medium ${badge.text} opacity-80 leading-tight`}>{badge.label}</span>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </section>
 
       <div className="overflow-hidden glass-panel border-x-0 py-3">
